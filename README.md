@@ -1,7 +1,9 @@
-<<<<<<< HEAD
-# algamoney-api
-=======
 # algamoney-api
 
-em contrução
->>>>>>> 09428e5 (Create README.md)
+api rest de estudo com as seguintes tecnologias:
+java
+springboot
+spring rest
+spring data jpa
+flyway (migrations)
+spring security
