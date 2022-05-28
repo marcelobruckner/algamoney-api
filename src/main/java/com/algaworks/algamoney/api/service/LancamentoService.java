@@ -12,6 +12,8 @@ import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import com.algaworks.algamoney.api.repository.projection.ResumoLancamento;
 import com.algaworks.algamoney.api.service.exception.LancamentoBusinessExcepton;
 
+import com.algaworks.algamoney.api.service.exception.PessoaInexistenteOuInativaException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,5 +72,27 @@ public class LancamentoService {
 
     public void delete(Long id) {
         lancamentoRepository.deleteById(id);
+    }
+
+    public Lancamento atualizar(Long id, Lancamento lancamento){
+        Lancamento lancamentoSalvo = this.buscar(id);
+        if(!lancamento.getPessoa().equals(lancamentoSalvo.getPessoa())){
+            validarPessoa(lancamento);
+        }
+
+        BeanUtils.copyProperties(lancamento, lancamentoSalvo, "codigo");
+
+        return lancamentoRepository.save(lancamentoSalvo);
+    }
+
+    private void validarPessoa(Lancamento lancamento) {
+        Pessoa pessoa = null;
+        if (lancamento.getPessoa().getCodigo() != null){
+            pessoa = pessoaService.buscar(lancamento.getPessoa().getCodigo());
+        }
+
+        if (pessoa == null || pessoa.isInativo()){
+            throw new PessoaInexistenteOuInativaException();
+        }
     }
 }

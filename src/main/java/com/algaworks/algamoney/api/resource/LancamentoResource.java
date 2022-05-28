@@ -1,6 +1,7 @@
 package com.algaworks.algamoney.api.resource;
 
 import com.algaworks.algamoney.api.event.RecursoCriadoEvent;
+import com.algaworks.algamoney.api.exceptionhandler.LancamentoNaoEncontradaException;
 import com.algaworks.algamoney.api.model.Lancamento;
 import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import com.algaworks.algamoney.api.repository.projection.ResumoLancamento;
@@ -53,5 +54,15 @@ public class  LancamentoResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         lancamentoService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Lancamento> atualizar(@PathVariable Long id, @Valid @RequestBody Lancamento lancamento){
+        try {
+            Lancamento lancamentoSalvo = lancamentoService.atualizar(id, lancamento);
+            return ResponseEntity.ok(lancamentoSalvo);
+        } catch (LancamentoNaoEncontradaException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
